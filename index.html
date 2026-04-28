@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>One Piece — Devil Fruit</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Title ─────────────────────────────────────────────────────── */
+        #title {
+            position: absolute;
+            top: 2%;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #title h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 14px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #fff 30%, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #title h2 {
+            margin: 4px 0 0;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+        }
+
+        /* ── Fruit Label ────────────────────────────────────────────────── */
+        #fruit-label {
+            position: absolute;
+            bottom: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 30;
+            white-space: nowrap;
+        }
+
+        #fruit-symbol {
+            font-size: 2.4rem;
+            line-height: 1;
+            display: block;
+            filter: drop-shadow(0 0 14px currentColor);
+        }
+
+        #fruit-name {
+            display: block;
+            font-size: 1.05rem;
+            margin-top: 6px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+            color: #0099ff;
+            text-shadow: 0 0 12px rgba(0,153,255,0.5);
+        }
+
+        #fruit-user {
+            display: block;
+            font-size: 0.6rem;
+            margin-top: 4px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            transition: color 0.5s ease;
+        }
+
+        /* ── Gesture Guide ──────────────────────────────────────────────── */
+        #gesture-guide {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 2.5%;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.62rem;
+            letter-spacing: 2px;
+            line-height: 2.1;
+            text-align: right;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #gesture-guide span { display: block; }
+        #gesture-guide .divider {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin: 6px 0;
+        }
+
+        /* ── Video Container ────────────────────────────────────────────── */
+        #video-container {
+            position: absolute;
+            bottom: 2%;
+            left: 18%;
+            transform: translateX(-50%) scaleX(-1);
+            width: 85vw;
+            max-width: 440px;
+            height: 40vh;
+            border: 2px solid rgba(0,153,255,0.3);
+            border-radius: 22px;
+            overflow: hidden;
+            background: #000;
+            z-index: 20;
+            box-shadow: 0 0 40px rgba(0,153,255,0.15);
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.72;
+        }
+
+        #output_canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        /* ── Grain overlay ──────────────────────────────────────────────── */
+        #grain {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.55;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+        }
+
+        /* ── Debug overlay (hidden by default) ─────────────────────────── */
+        #debug {
+            display: none;
+            position: absolute;
+            top: 10px; left: 10px;
+            color: #0f0;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            z-index: 100;
+            background: rgba(0,0,0,0.5);
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+    </style>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div id="grain"></div>
+
+<div id="title">
+    <h1>Devil Fruit</h1>
+    <h2>One Piece &mdash; Awaken Your Power</h2>
+</div>
+
+<div id="fruit-label">
+    <span id="fruit-symbol">🌊</span>
+    <span id="fruit-name">SEARCHING FOR THE GRAND LINE</span>
+    <span id="fruit-user">&nbsp;</span>
+</div>
+
+<div id="gesture-guide">
+    <span>✌️&nbsp; TWO FINGERS → MERA MERA</span>
+    <span>🤚&nbsp; OPEN PALM FRONT → OPE OPE</span>
+    <span>👇&nbsp; PALM DOWN → SUNA SUNA</span>
+    <span>☝️&nbsp; ONE FINGER → PIKA PIKA</span>
+    <span>🤜&nbsp; FIST → GURA GURA</span>
+    <span>🤏&nbsp; CLAW → YAMI YAMI</span>
+    <span>🧊&nbsp; KARATE CHOP → HIE HIE</span>
+    <span>🤲&nbsp; TWO HAND STRETCH → GOMU GOMU</span>
+    <div class="divider"></div>
+    <span style="color:rgba(255,255,255,0.18)">SHOW HANDS TO BEGIN</span>
+</div>
+
+<div id="video-container">
+    <video class="input_video"></video>
+    <canvas id="output_canvas"></canvas>
+</div>
+
+<div id="debug"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SCENE SETUP
+// ═══════════════════════════════════════════════════════════════════════════
+
+const scene = new THREE.Scene();
+
+const cam = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 1000);
+cam.position.z = 58;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.body.appendChild(renderer.domElement);
+
+// Post-processing
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, cam));
+
+const bloom = new UnrealBloomPass(
+    new THREE.Vector2(innerWidth, innerHeight),
+    1.6,  // strength
+    0.4,  // radius
+    0.85  // threshold
+);
+composer.addPass(bloom);
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  PRIMARY PARTICLE BUFFER  (main fruit effect — 25 000 pts)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const COUNT = 25000;
+
+const pos  = new Float32Array(COUNT * 3);
+const col  = new Float32Array(COUNT * 3);
+const siz  = new Float32Array(COUNT);
+const tPos = new Float32Array(COUNT * 3);
+const tCol = new Float32Array(COUNT * 3);
+const tSiz = new Float32Array(COUNT);
+
+// velocity buffer — used by physics overlays (Yami, Gura, Gomu)
+const vel  = new Float32Array(COUNT * 3);
+
+const geoA = new THREE.BufferGeometry();
+geoA.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geoA.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+geoA.setAttribute('size',     new THREE.BufferAttribute(siz, 1));
+
+const matA = new THREE.PointsMaterial({
+    size: 0.28,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    depthWrite: false,
+});
+
+const ptsA = new THREE.Points(geoA, matA);
+scene.add(ptsA);
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ACCENT PARTICLE BUFFER  (ROOM ring, light beams, etc. — 3 000 pts)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const COUNT_B = 3000;
+
+const posB  = new Float32Array(COUNT_B * 3);
+const colB  = new Float32Array(COUNT_B * 3);
+const sizB  = new Float32Array(COUNT_B);
+const tPosB = new Float32Array(COUNT_B * 3);
+const tColB = new Float32Array(COUNT_B * 3);
+const tSizB = new Float32Array(COUNT_B);
+
+const geoB = new THREE.BufferGeometry();
+geoB.setAttribute('position', new THREE.BufferAttribute(posB, 3));
+geoB.setAttribute('color',    new THREE.BufferAttribute(colB, 3));
+geoB.setAttribute('size',     new THREE.BufferAttribute(sizB, 1));
+
+const matB = new THREE.PointsMaterial({
+    size: 0.55,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    depthWrite: false,
+});
+
+const ptsB = new THREE.Points(geoB, matB);
+scene.add(ptsB);
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ELEMENT CONFIG
+// ═══════════════════════════════════════════════════════════════════════════
+
+const FRUITS = {
+    neutral:  { name: 'SEARCHING FOR THE GRAND LINE', user: '',                symbol: '🌊', color: '#0055aa', bloom: 1.4, shake: 0.00, lerp: 0.06 },
+    mera:     { name: 'MERA MERA NO MI',               user: 'PORTGAS D. ACE', symbol: '🔥', color: '#ff4400', bloom: 2.8, shake: 0.20, lerp: 0.10 },
+    hie:      { name: 'HIE HIE NO MI',                 user: 'KUZAN — AOKIJI', symbol: '🧊', color: '#aaddff', bloom: 2.0, shake: 0.00, lerp: 0.04 },
+    gura:     { name: 'GURA GURA NO MI',               user: 'EDWARD NEWGATE — WHITEBEARD', symbol: '💥', color: '#ffcc00', bloom: 3.2, shake: 0.55, lerp: 0.08 },
+    ope:      { name: 'OPE OPE NO MI',                 user: 'TRAFALGAR D. WATER LAW', symbol: '⭕', color: '#00ffcc', bloom: 2.4, shake: 0.05, lerp: 0.09 },
+    yami:     { name: 'YAMI YAMI NO MI',               user: 'MARSHALL D. TEACH — BLACKBEARD', symbol: '🌑', color: '#8800ff', bloom: 2.6, shake: 0.12, lerp: 0.07 },
+    pika:     { name: 'PIKA PIKA NO MI',               user: 'BORSALINO — KIZARU',  symbol: '✨', color: '#ffff66', bloom: 4.5, shake: 0.08, lerp: 1.00 },
+    suna:     { name: 'SUNA SUNA NO MI',               user: 'CROCODILE — SIR CROCODILE', symbol: '🏜️', color: '#cc9944', bloom: 1.8, shake: 0.10, lerp: 0.07 },
+    gomu:     { name: 'GOMU GOMU NO MI',               user: 'MONKEY D. LUFFY',     symbol: '👊', color: '#ff2222', bloom: 2.2, shake: 0.15, lerp: 0.13 },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════════════
+
+let currentFruit = '';
+let lerpSpeed    = 0.06;
+
+// Physics state
+let waveRadius   = 999;  // Gura Gura — current shockwave radius
+let waveActive   = false;
+
+// Hand tracking state (world-space, updated each frame)
+let hand0 = null;  // primary hand landmarks
+let hand1 = null;  // secondary hand landmarks
+
+// DOM refs
+const videoEl  = document.querySelector('.input_video');
+const canvasEl = document.getElementById('output_canvas');
+const ctx2d    = canvasEl.getContext('2d');
+const nameEl   = document.getElementById('fruit-name');
+const symbEl   = document.getElementById('fruit-symbol');
+const userEl   = document.getElementById('fruit-user');
+const vidCont  = document.getElementById('video-container');
+const debugEl  = document.getElementById('debug');
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  NEUTRAL — sea scene (placeholder, full generators added in later steps)
+// ═══════════════════════════════════════════════════════════════════════════
+
+function getNeutral(i) {
+    if (i < COUNT * 0.55) {
+        // Ocean surface plane
+        const x = (Math.random() - 0.5) * 130;
+        const z = (Math.random() - 0.5) * 130;
+        const wave = Math.sin(x * 0.18) * Math.cos(z * 0.14) * 4.5;
+        const depth = Math.random();
+        return {
+            x, y: -18 + wave + (Math.random() - 0.5) * 1.2, z,
+            r: 0.0, g: 0.18 + depth * 0.12, b: 0.45 + depth * 0.35,
+            s: 0.5 + Math.random() * 0.4
+        };
+    }
+    if (i < COUNT * 0.80) {
+        // Sub-surface scatter — deeper blue
+        const x = (Math.random() - 0.5) * 100;
+        const z = (Math.random() - 0.5) * 100;
+        return {
+            x, y: -18 - Math.random() * 18, z,
+            r: 0.0, g: 0.08, b: 0.28 + Math.random() * 0.18,
+            s: 0.3
+        };
+    }
+    // Horizon mist
+    const th = Math.random() * Math.PI * 2;
+    const r  = 45 + Math.random() * 20;
+    return {
+        x: r * Math.cos(th), y: -12 + Math.random() * 10, z: r * Math.sin(th),
+        r: 0.0, g: 0.12, b: 0.35,
+        s: 0.2
+    };
+}
+
+function getNeutralB(i) {
+    // Gentle surface sparkles
+    const x = (Math.random() - 0.5) * 80;
+    const z = (Math.random() - 0.5) * 80;
+    const wave = Math.sin(x * 0.2) * Math.cos(z * 0.15) * 4;
+    return {
+        x, y: -17.5 + wave, z,
+        r: 0.1, g: 0.45, b: 0.9,
+        s: 0.6 + Math.random() * 0.6
+    };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  UPDATE FRUIT STATE
+// ═══════════════════════════════════════════════════════════════════════════
+
+function updateFruit(tech) {
+    if (currentFruit === tech) return;
+    currentFruit = tech;
+
+    const cfg = FRUITS[tech];
+    lerpSpeed       = cfg.lerp;
+    bloom.strength  = cfg.bloom;
+
+    nameEl.innerText       = cfg.name;
+    nameEl.style.color     = cfg.color;
+    nameEl.style.textShadow = `0 0 14px ${cfg.color}99`;
+    symbEl.innerText       = cfg.symbol;
+    userEl.innerText       = cfg.user;
+    userEl.style.color     = cfg.color + '88';
+    vidCont.style.borderColor = cfg.color + '55';
+    vidCont.style.boxShadow   = `0 0 40px ${cfg.color}22`;
+
+    // --- primary particles ---
+    const gen = {
+        neutral: getNeutral,
+        // remaining generators stubbed until their steps are implemented
+    }[tech] ?? getNeutral;
+
+    for (let i = 0; i < COUNT; i++) {
+        const p = gen(i);
+        tPos[i*3]   = p.x; tPos[i*3+1] = p.y; tPos[i*3+2] = p.z;
+        tCol[i*3]   = p.r; tCol[i*3+1] = p.g; tCol[i*3+2] = p.b;
+        tSiz[i]     = p.s;
+    }
+
+    // --- accent particles ---
+    const genB = {
+        neutral: getNeutralB,
+    }[tech] ?? getNeutralB;
+
+    for (let i = 0; i < COUNT_B; i++) {
+        const p = genB(i);
+        tPosB[i*3]   = p.x; tPosB[i*3+1] = p.y; tPosB[i*3+2] = p.z;
+        tColB[i*3]   = p.r; tColB[i*3+1] = p.g; tColB[i*3+2] = p.b;
+        tSizB[i]     = p.s;
+    }
+
+    // Pika Pika teleports — skip lerp by copying targets directly
+    if (tech === 'pika') {
+        pos.set(tPos); col.set(tCol); siz.set(tSiz);
+        posB.set(tPosB); colB.set(tColB); sizB.set(tSizB);
+    }
+
+    // Gura Gura resets the shockwave
+    if (tech === 'gura') {
+        waveRadius = 0;
+        waveActive = true;
+    } else {
+        waveActive = false;
+    }
+
+    // Clear velocities on switch
+    vel.fill(0);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════════════════════
+
+const cfg = () => FRUITS[currentFruit] ?? FRUITS.neutral;
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Screen shake
+    const shake = cfg().shake;
+    renderer.domElement.style.transform = shake > 0
+        ? `translate(${(Math.random()-0.5)*shake*30}px,${(Math.random()-0.5)*shake*30}px)`
+        : 'translate(0,0)';
+
+    // Lerp primary particles toward targets
+    const sp = lerpSpeed;
+    for (let i = 0; i < COUNT * 3; i++) {
+        pos[i] += (tPos[i] - pos[i]) * sp;
+        col[i] += (tCol[i] - col[i]) * 0.09;
+    }
+    for (let i = 0; i < COUNT; i++) {
+        siz[i] += (tSiz[i] - siz[i]) * 0.09;
+    }
+
+    // Lerp accent particles
+    for (let i = 0; i < COUNT_B * 3; i++) {
+        posB[i] += (tPosB[i] - posB[i]) * 0.08;
+        colB[i] += (tColB[i] - colB[i]) * 0.09;
+    }
+    for (let i = 0; i < COUNT_B; i++) {
+        sizB[i] += (tSizB[i] - sizB[i]) * 0.09;
+    }
+
+    // ── Per-fruit rotation personalities ──────────────────────────────────
+    switch (currentFruit) {
+        case 'neutral':
+            ptsA.rotation.y += 0.003;
+            ptsA.rotation.x  = Math.sin(Date.now() * 0.0003) * 0.08;
+            break;
+        case 'mera':
+            ptsA.rotation.y += 0.018;
+            ptsA.rotation.z += 0.004;
+            break;
+        case 'hie':
+            // Slow, stiff — occasional micro-step simulated by near-zero delta
+            ptsA.rotation.y += 0.004;
+            break;
+        case 'gura':
+            // No rotation — shockwave is radial
+            break;
+        case 'ope':
+            ptsA.rotation.y += 0.012;
+            ptsA.rotation.x += 0.006;
+            ptsB.rotation.y += 0.015;
+            ptsB.rotation.x += 0.008;
+            break;
+        case 'yami':
+            ptsA.rotation.y -= 0.008; // counter-clockwise pull
+            break;
+        case 'pika':
+            ptsA.rotation.y += 0.001;
+            break;
+        case 'suna':
+            ptsA.rotation.y += 0.005;
+            break;
+        case 'gomu':
+            ptsA.rotation.y += 0.01;
+            break;
+    }
+
+    // Mark buffers dirty
+    geoA.attributes.position.needsUpdate = true;
+    geoA.attributes.color.needsUpdate    = true;
+    geoA.attributes.size.needsUpdate     = true;
+    geoB.attributes.position.needsUpdate = true;
+    geoB.attributes.color.needsUpdate    = true;
+    geoB.attributes.size.needsUpdate     = true;
+
+    composer.render();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  MEDIAPIPE HANDS (stub — gesture classifier added in Step 5)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const hands = new Hands({
+    locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
+});
+hands.setOptions({
+    maxNumHands: 2,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.72,
+    minTrackingConfidence: 0.6,
+});
+
+hands.onResults(results => {
+    ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+    hand0 = null; hand1 = null;
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        hand0 = results.multiHandLandmarks[0];
+        if (results.multiHandLandmarks.length > 1) hand1 = results.multiHandLandmarks[1];
+
+        results.multiHandLandmarks.forEach(lm => {
+            const c = FRUITS[currentFruit]?.color ?? '#0099ff';
+            drawConnectors(ctx2d, lm, HAND_CONNECTIONS, { color: c, lineWidth: 4 });
+            drawLandmarks(ctx2d, lm, { color: '#fff', lineWidth: 1, radius: 2 });
+        });
+    }
+
+    // Fruit detection will go here in Step 5 — for now cycle neutral
+    updateFruit('neutral');
+});
+
+const cameraUtils = new Camera(videoEl, {
+    onFrame: async () => {
+        canvasEl.width  = videoEl.videoWidth;
+        canvasEl.height = videoEl.videoHeight;
+        await hands.send({ image: videoEl });
+    },
+    width: 640, height: 480
+});
+cameraUtils.start();
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════════════════════
+
+updateFruit('neutral');
+animate();
+
+// ── Resize ─────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+    cam.aspect = innerWidth / innerHeight;
+    cam.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    composer.setSize(innerWidth, innerHeight);
+    bloom.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
