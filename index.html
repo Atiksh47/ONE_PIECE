@@ -74,10 +74,20 @@
             text-shadow: 0 0 12px rgba(0,153,255,0.5);
         }
 
+        #fruit-trans {
+            display: block;
+            font-size: 0.72rem;
+            margin-top: 5px;
+            letter-spacing: 3px;
+            font-style: italic;
+            color: rgba(255,255,255,0.5);
+            transition: color 0.5s ease;
+        }
+
         #fruit-user {
             display: block;
             font-size: 0.6rem;
-            margin-top: 4px;
+            margin-top: 3px;
             letter-spacing: 5px;
             text-transform: uppercase;
             color: rgba(255,255,255,0.35);
@@ -103,6 +113,17 @@
         #gesture-guide .divider {
             border-top: 1px solid rgba(255,255,255,0.1);
             margin: 6px 0;
+        }
+        kbd {
+            display: inline-block;
+            padding: 0px 4px;
+            font-size: 0.55rem;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 3px;
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.5);
+            vertical-align: middle;
         }
 
         /* ── Video Container ────────────────────────────────────────────── */
@@ -187,20 +208,21 @@
 <div id="fruit-label">
     <span id="fruit-symbol">🌊</span>
     <span id="fruit-name">SEARCHING FOR THE GRAND LINE</span>
+    <span id="fruit-trans">&nbsp;</span>
     <span id="fruit-user">&nbsp;</span>
 </div>
 
 <div id="gesture-guide">
-    <span>✌️&nbsp; TWO FINGERS → MERA MERA</span>
-    <span>🤚&nbsp; OPEN PALM FRONT → OPE OPE</span>
-    <span>👇&nbsp; PALM DOWN → SUNA SUNA</span>
-    <span>☝️&nbsp; ONE FINGER → PIKA PIKA</span>
-    <span>🤜&nbsp; FIST → GURA GURA</span>
-    <span>🤏&nbsp; CLAW → YAMI YAMI</span>
-    <span>🧊&nbsp; KARATE CHOP → HIE HIE</span>
-    <span>🤲&nbsp; TWO HAND STRETCH → GOMU GOMU</span>
+    <span>✌️&nbsp; TWO FINGERS &nbsp;<kbd>1</kbd>&nbsp; MERA MERA</span>
+    <span>🤚&nbsp; OPEN PALM FRONT &nbsp;<kbd>4</kbd>&nbsp; OPE OPE</span>
+    <span>👇&nbsp; PALM DOWN &nbsp;<kbd>7</kbd>&nbsp; SUNA SUNA</span>
+    <span>☝️&nbsp; ONE FINGER &nbsp;<kbd>6</kbd>&nbsp; PIKA PIKA</span>
+    <span>🤜&nbsp; FIST &nbsp;<kbd>3</kbd>&nbsp; GURA GURA</span>
+    <span>🤏&nbsp; CLAW &nbsp;<kbd>5</kbd>&nbsp; YAMI YAMI</span>
+    <span>🧊&nbsp; KARATE CHOP &nbsp;<kbd>2</kbd>&nbsp; HIE HIE</span>
+    <span>🤲&nbsp; TWO-HAND STRETCH &nbsp;<kbd>8</kbd>&nbsp; GOMU GOMU</span>
     <div class="divider"></div>
-    <span style="color:rgba(255,255,255,0.18)">SHOW HANDS TO BEGIN</span>
+    <span style="color:rgba(255,255,255,0.18)">SHOW HANDS OR PRESS KEY</span>
 </div>
 
 <div id="video-container">
@@ -310,15 +332,15 @@ scene.add(ptsB);
 // ═══════════════════════════════════════════════════════════════════════════
 
 const FRUITS = {
-    neutral:  { name: 'SEARCHING FOR THE GRAND LINE', user: '',                symbol: '🌊', color: '#0055aa', bloom: 1.4, shake: 0.00, lerp: 0.06 },
-    mera:     { name: 'MERA MERA NO MI',               user: 'PORTGAS D. ACE', symbol: '🔥', color: '#ff4400', bloom: 2.8, shake: 0.20, lerp: 0.10 },
-    hie:      { name: 'HIE HIE NO MI',                 user: 'KUZAN — AOKIJI', symbol: '🧊', color: '#aaddff', bloom: 2.0, shake: 0.00, lerp: 0.04 },
-    gura:     { name: 'GURA GURA NO MI',               user: 'EDWARD NEWGATE — WHITEBEARD', symbol: '💥', color: '#ffcc00', bloom: 3.2, shake: 0.55, lerp: 0.08 },
-    ope:      { name: 'OPE OPE NO MI',                 user: 'TRAFALGAR D. WATER LAW', symbol: '⭕', color: '#00ffcc', bloom: 2.4, shake: 0.05, lerp: 0.09 },
-    yami:     { name: 'YAMI YAMI NO MI',               user: 'MARSHALL D. TEACH — BLACKBEARD', symbol: '🌑', color: '#8800ff', bloom: 2.6, shake: 0.12, lerp: 0.07 },
-    pika:     { name: 'PIKA PIKA NO MI',               user: 'BORSALINO — KIZARU',  symbol: '✨', color: '#ffff66', bloom: 4.5, shake: 0.08, lerp: 1.00 },
-    suna:     { name: 'SUNA SUNA NO MI',               user: 'CROCODILE — SIR CROCODILE', symbol: '🏜️', color: '#cc9944', bloom: 1.8, shake: 0.10, lerp: 0.07 },
-    gomu:     { name: 'GOMU GOMU NO MI',               user: 'MONKEY D. LUFFY',     symbol: '👊', color: '#ff2222', bloom: 2.2, shake: 0.15, lerp: 0.13 },
+    neutral:  { name: 'SEARCHING FOR THE GRAND LINE', trans: '',                          user: '',                                  symbol: '🌊', color: '#0055aa', bloom: 1.4, shake: 0.00, lerp: 0.06 },
+    mera:     { name: 'MERA MERA NO MI',               trans: 'Flame-Flame Fruit',         user: 'PORTGAS D. ACE',                    symbol: '🔥', color: '#ff4400', bloom: 2.8, shake: 0.20, lerp: 0.10 },
+    hie:      { name: 'HIE HIE NO MI',                 trans: 'Chilly-Chilly Fruit',       user: 'KUZAN — AOKIJI',                    symbol: '🧊', color: '#aaddff', bloom: 2.0, shake: 0.00, lerp: 0.04 },
+    gura:     { name: 'GURA GURA NO MI',               trans: 'Tremor-Tremor Fruit',       user: 'EDWARD NEWGATE — WHITEBEARD',       symbol: '💥', color: '#ffcc00', bloom: 3.2, shake: 0.55, lerp: 0.08 },
+    ope:      { name: 'OPE OPE NO MI',                 trans: 'Op-Op Fruit',               user: 'TRAFALGAR D. WATER LAW',            symbol: '⭕', color: '#00ffcc', bloom: 2.4, shake: 0.05, lerp: 0.09 },
+    yami:     { name: 'YAMI YAMI NO MI',               trans: 'Dark-Dark Fruit',           user: 'MARSHALL D. TEACH — BLACKBEARD',    symbol: '🌑', color: '#8800ff', bloom: 2.6, shake: 0.12, lerp: 0.07 },
+    pika:     { name: 'PIKA PIKA NO MI',               trans: 'Glint-Glint Fruit',         user: 'BORSALINO — KIZARU',                symbol: '✨', color: '#ffff66', bloom: 4.5, shake: 0.08, lerp: 1.00 },
+    suna:     { name: 'SUNA SUNA NO MI',               trans: 'Sand-Sand Fruit',           user: 'CROCODILE — SIR CROCODILE',         symbol: '🏜️', color: '#cc9944', bloom: 1.8, shake: 0.10, lerp: 0.07 },
+    gomu:     { name: 'GOMU GOMU NO MI',               trans: 'Gum-Gum Fruit',             user: 'MONKEY D. LUFFY',                   symbol: '👊', color: '#ff2222', bloom: 2.2, shake: 0.15, lerp: 0.13 },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -341,6 +363,7 @@ const videoEl  = document.querySelector('.input_video');
 const canvasEl = document.getElementById('output_canvas');
 const ctx2d    = canvasEl.getContext('2d');
 const nameEl   = document.getElementById('fruit-name');
+const transEl  = document.getElementById('fruit-trans');
 const symbEl   = document.getElementById('fruit-symbol');
 const userEl   = document.getElementById('fruit-user');
 const vidCont  = document.getElementById('video-container');
@@ -942,12 +965,13 @@ function updateFruit(tech) {
     lerpSpeed       = cfg.lerp;
     bloom.strength  = cfg.bloom;
 
-    nameEl.innerText       = cfg.name;
-    nameEl.style.color     = cfg.color;
+    nameEl.innerText        = cfg.name;
+    nameEl.style.color      = cfg.color;
     nameEl.style.textShadow = `0 0 14px ${cfg.color}99`;
-    symbEl.innerText       = cfg.symbol;
-    userEl.innerText       = cfg.user;
-    userEl.style.color     = cfg.color + '88';
+    transEl.innerText       = cfg.trans ? `— ${cfg.trans} —` : ' ';
+    symbEl.innerText        = cfg.symbol;
+    userEl.innerText        = cfg.user;
+    userEl.style.color      = cfg.color + '88';
     vidCont.style.borderColor = cfg.color + '55';
     vidCont.style.boxShadow   = `0 0 40px ${cfg.color}22`;
 
@@ -1008,6 +1032,14 @@ function updateFruit(tech) {
     // Reset camera position when leaving neutral
     if (tech !== 'neutral') cam.position.y = 0;
 
+    // Reset rotation axes that don't apply to new fruit
+    if (tech === 'gura' || tech === 'suna') {
+        ptsA.rotation.x = 0; ptsA.rotation.z = 0;
+    }
+    if (tech !== 'ope') {
+        ptsB.rotation.x = 0; ptsB.rotation.y = 0;
+    }
+
     // Clear velocities on switch
     vel.fill(0);
 }
@@ -1029,6 +1061,68 @@ function animate() {
 
     // Gomu Gomu — stretch lattice toward hand positions every frame
     if (currentFruit === 'gomu') tickGomuStretch();
+
+    // Mera Mera — flame arm heights flicker each frame
+    if (currentFruit === 'mera') {
+        const armEnd = Math.floor(COUNT * 0.68);
+        const ARM = 6;
+        for (let i = Math.floor(COUNT * 0.08); i < armEnd; i++) {
+            const t = (i - COUNT*0.08) / (COUNT*0.60);
+            // Add small turbulent vertical jitter
+            tPos[i*3+1] += (Math.random()-0.5) * 0.35 * (1-t);
+        }
+        // Spin accent fire-ring over time
+        for (let i = 0; i < Math.floor(COUNT_B * 0.5); i++) {
+            const th = (i / (COUNT_B*0.5)) * Math.PI*2 + clock * 2.2;
+            const rad = 10 + Math.sin(th*6 + clock*3)*2;
+            tPosB[i*3]   = rad*Math.cos(th);
+            tPosB[i*3+2] = rad*Math.sin(th)*0.25;
+            tPosB[i*3+1] = 2 + Math.sin(th*3 + clock*4)*4;
+        }
+    }
+
+    // Yami Yami — vortex ring spirals tighter over time
+    if (currentFruit === 'yami') {
+        for (let i = 0; i < COUNT_B; i++) {
+            const t   = i / COUNT_B;
+            const th  = t * Math.PI*2*6 + clock * 1.2;
+            const rad = Math.max(2, 5 + (1-t)*35 - (clock % 8)*2);
+            tPosB[i*3]   = rad*Math.cos(th);
+            tPosB[i*3+2] = rad*Math.sin(th);
+            tPosB[i*3+1] = (Math.sin(clock*0.8 + t*4)-0.5)*3;
+        }
+    }
+
+    // Hie Hie — occasional sharp rotation micro-step (ice cracking feel)
+    if (currentFruit === 'hie' && Math.random() < 0.012) {
+        ptsA.rotation.y += (Math.random()-0.5) * 0.06;
+    }
+
+    // Pika Pika — light beams pulse in brightness each frame
+    if (currentFruit === 'pika') {
+        const pulse = 0.85 + Math.sin(clock * 18) * 0.15;
+        for (let i = 0; i < COUNT_B; i++) {
+            tColB[i*3]   = pulse;
+            tColB[i*3+1] = pulse;
+            tColB[i*3+2] = 0.5 + pulse*0.3;
+        }
+    }
+
+    // Suna Suna — sandstorm columns sway slowly
+    if (currentFruit === 'suna') {
+        const colStart = Math.floor(COUNT * 0.30);
+        const colEnd   = Math.floor(COUNT * 0.65);
+        const COLS = 5;
+        const colAngles = [0, 1.26, 2.51, 3.77, 5.03];
+        const colRadii  = [0, 20, 28, 18, 24];
+        for (let i = colStart; i < colEnd; i++) {
+            const col  = Math.floor((i-colStart)/((colEnd-colStart)/COLS));
+            const ht   = tPos[i*3+1] + 20;
+            const sway = Math.sin(clock*0.7 + col*1.3) * 1.5 * (ht/55);
+            tPos[i*3]   = colRadii[col]*Math.cos(colAngles[col] + ht*0.08) + sway;
+            tPos[i*3+2] = colRadii[col]*Math.sin(colAngles[col] + ht*0.08) + sway*0.5;
+        }
+    }
 
     // Gura Gura — expand shockwave ring outward, reset when it reaches max
     if (currentFruit === 'gura' && waveActive) {
@@ -1181,9 +1275,265 @@ function animate() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  MEDIAPIPE HANDS (stub — gesture classifier added in Step 5)
+//  WEB AUDIO — unique synthesized sound per fruit activation
 // ═══════════════════════════════════════════════════════════════════════════
 
+let audioCtx = null;
+function getAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+}
+
+function playSound(fruit) {
+    try {
+        const ac = getAudio();
+        const t  = ac.currentTime;
+
+        const gain = ac.createGain();
+        gain.connect(ac.destination);
+
+        if (fruit === 'mera') {
+            // Crackling noise burst — filtered white noise
+            const buf  = ac.createBuffer(1, ac.sampleRate * 0.6, ac.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(ac.sampleRate*0.12));
+            const src  = ac.createBufferSource(); src.buffer = buf;
+            const filt = ac.createBiquadFilter(); filt.type = 'bandpass'; filt.frequency.value = 800; filt.Q.value = 0.4;
+            src.connect(filt); filt.connect(gain);
+            gain.gain.setValueAtTime(0.5, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.6);
+            src.start(t);
+
+        } else if (fruit === 'hie') {
+            // Crystal ping — sine at 1800 Hz, sharp decay
+            const osc = ac.createOscillator(); osc.type = 'sine'; osc.frequency.value = 1800;
+            osc.connect(gain);
+            gain.gain.setValueAtTime(0.4, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.7);
+            osc.start(t); osc.stop(t+0.7);
+
+        } else if (fruit === 'gura') {
+            // Low rumble — 55 Hz oscillator + distortion
+            const osc  = ac.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = 55;
+            const dist = ac.createWaveShaper();
+            const curve = new Float32Array(256);
+            for (let i = 0; i < 256; i++) { const x = (i*2/255)-1; curve[i] = (Math.PI+400)*x/(Math.PI+400*Math.abs(x)); }
+            dist.curve = curve;
+            osc.connect(dist); dist.connect(gain);
+            gain.gain.setValueAtTime(0.0, t);
+            gain.gain.linearRampToValueAtTime(0.55, t+0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+1.0);
+            osc.start(t); osc.stop(t+1.0);
+
+        } else if (fruit === 'ope') {
+            // Sweeping sine glide upward
+            const osc = ac.createOscillator(); osc.type = 'sine';
+            osc.frequency.setValueAtTime(180, t);
+            osc.frequency.exponentialRampToValueAtTime(900, t+0.5);
+            osc.connect(gain);
+            gain.gain.setValueAtTime(0.3, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.55);
+            osc.start(t); osc.stop(t+0.55);
+
+        } else if (fruit === 'yami') {
+            // Reverse-envelope low drone — fade in then cut
+            const osc = ac.createOscillator(); osc.type = 'sine'; osc.frequency.value = 60;
+            const osc2 = ac.createOscillator(); osc2.type = 'sawtooth'; osc2.frequency.value = 58;
+            const mg = ac.createGain(); mg.gain.value = 0.5;
+            osc.connect(mg); osc2.connect(mg); mg.connect(gain);
+            gain.gain.setValueAtTime(0.0, t);
+            gain.gain.linearRampToValueAtTime(0.4, t+0.6);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+1.1);
+            osc.start(t); osc.stop(t+1.1);
+            osc2.start(t); osc2.stop(t+1.1);
+
+        } else if (fruit === 'pika') {
+            // Instant high beep — very short 3800 Hz
+            const osc = ac.createOscillator(); osc.type = 'sine'; osc.frequency.value = 3800;
+            osc.connect(gain);
+            gain.gain.setValueAtTime(0.35, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.08);
+            osc.start(t); osc.stop(t+0.08);
+
+        } else if (fruit === 'suna') {
+            // White noise + low-pass sweep
+            const buf  = ac.createBuffer(1, ac.sampleRate * 0.9, ac.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = Math.random()*2-1;
+            const src  = ac.createBufferSource(); src.buffer = buf;
+            const filt = ac.createBiquadFilter(); filt.type = 'lowpass';
+            filt.frequency.setValueAtTime(200, t);
+            filt.frequency.exponentialRampToValueAtTime(1200, t+0.4);
+            filt.frequency.exponentialRampToValueAtTime(200, t+0.9);
+            src.connect(filt); filt.connect(gain);
+            gain.gain.setValueAtTime(0.4, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.9);
+            src.start(t);
+
+        } else if (fruit === 'gomu') {
+            // Springy boing — sine with fast pitch drop
+            const osc = ac.createOscillator(); osc.type = 'sine';
+            osc.frequency.setValueAtTime(520, t);
+            osc.frequency.exponentialRampToValueAtTime(60, t+0.45);
+            osc.connect(gain);
+            gain.gain.setValueAtTime(0.4, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+0.5);
+            osc.start(t); osc.stop(t+0.5);
+
+        } else if (fruit === 'neutral') {
+            // Ocean wash — low-pass noise
+            const buf  = ac.createBuffer(1, ac.sampleRate * 1.2, ac.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.sin(Math.PI*i/(ac.sampleRate*1.2));
+            const src  = ac.createBufferSource(); src.buffer = buf;
+            const filt = ac.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 300;
+            src.connect(filt); filt.connect(gain);
+            gain.gain.setValueAtTime(0.25, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t+1.2);
+            src.start(t);
+        }
+    } catch(e) { /* audio blocked until first user interaction — silently ignore */ }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  GESTURE CLASSIFIER — MediaPipe Hands
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+// Returns true if fingertip is above its PIP joint (finger is "up")
+function fingerUp(lm, tip, pip) { return lm[tip].y < lm[pip].y; }
+
+// Bitmask [thumb, index, middle, ring, pinky] — 1 = up
+function fingersUp(lm) {
+    return [
+        lm[4].x < lm[3].x,           // thumb: tip left of knuckle (mirrored cam)
+        fingerUp(lm, 8,  6),
+        fingerUp(lm, 12, 10),
+        fingerUp(lm, 16, 14),
+        fingerUp(lm, 20, 18),
+    ];
+}
+
+function pinchDist(lm) {
+    return Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y);
+}
+
+// All four fingers curled (not thumb)
+function isFist(lm) {
+    const f = fingersUp(lm);
+    return !f[1] && !f[2] && !f[3] && !f[4];
+}
+
+// Fingers partially curled — tips below MCP but above wrist
+function isClaw(lm) {
+    // Each fingertip Y should be between its MCP (knuckle) and wrist
+    const wristY = lm[0].y;
+    const check  = [
+        [8,  5],  // index tip, index MCP
+        [12, 9],  // middle
+        [16, 13], // ring
+        [20, 17], // pinky
+    ];
+    let clawed = 0;
+    for (const [tip, mcp] of check) {
+        if (lm[tip].y > lm[mcp].y && lm[tip].y < wristY + (wristY - lm[mcp].y)*0.3) clawed++;
+    }
+    return clawed >= 3;
+}
+
+// Palm facing camera: z-component of cross product of palm vectors > threshold
+function palmFacingCamera(lm) {
+    // Vector from wrist→index_mcp and wrist→pinky_mcp
+    const ax = lm[5].x - lm[0].x, ay = lm[5].y - lm[0].y;
+    const bx = lm[17].x - lm[0].x, by = lm[17].y - lm[0].y;
+    // Cross product z (positive = palm facing camera in mirrored feed)
+    return (ax*by - ay*bx) < 0;
+}
+
+// Palm facing down: wrist y < average fingertip y (hand tilted down)
+function palmFacingDown(lm) {
+    const avgTipY = (lm[8].y + lm[12].y + lm[16].y + lm[20].y) / 4;
+    return lm[0].y < avgTipY - 0.04;
+}
+
+// Flat karate-chop: all fingers extended AND hand roughly horizontal
+function isKaratChop(lm) {
+    const f = fingersUp(lm);
+    const allUp = f[1] && f[2] && f[3] && f[4];
+    // Hand is "horizontal" when index and pinky tips have similar Y
+    const levelness = Math.abs(lm[8].y - lm[20].y);
+    return allUp && levelness < 0.08;
+}
+
+// Two-hand helpers
+function handSpan(lm0, lm1) {
+    return Math.hypot(lm0[0].x - lm1[0].x, lm0[0].y - lm1[0].y);
+}
+
+// ── Debounce: require gesture held for N consecutive frames ────────────────
+let gestureCandidateHistory = [];
+const GESTURE_HOLD_FRAMES = 4;
+
+function stableGesture(candidate) {
+    gestureCandidateHistory.push(candidate);
+    if (gestureCandidateHistory.length > GESTURE_HOLD_FRAMES)
+        gestureCandidateHistory.shift();
+    // Only commit if last N frames all agree
+    return gestureCandidateHistory.every(g => g === candidate) ? candidate : currentFruit;
+}
+
+// ── Gesture guide highlight helper ────────────────────────────────────────
+const guideRows = document.querySelectorAll('#gesture-guide span:not(.divider)');
+const fruitRowMap = { mera: 0, ope: 1, suna: 2, pika: 3, gura: 4, yami: 5, hie: 6, gomu: 7 };
+
+function highlightGuide(fruit) {
+    guideRows.forEach((el, idx) => {
+        el.style.color    = (fruitRowMap[fruit] === idx) ? (FRUITS[fruit]?.color ?? 'white') : 'rgba(255,255,255,0.4)';
+        el.style.fontWeight = (fruitRowMap[fruit] === idx) ? 'bold' : 'normal';
+    });
+}
+
+// ── Main classifier ────────────────────────────────────────────────────────
+function classifyGesture(lm0, lm1) {
+    if (!lm0) return 'neutral';
+
+    const f    = fingersUp(lm0);
+    const pdist = pinchDist(lm0);
+
+    // ① Gomu Gomu — two hands stretched far apart (both open)
+    if (lm1) {
+        const span = handSpan(lm0, lm1);
+        const f1   = fingersUp(lm1);
+        const bothOpen = f[1]&&f[2]&&f[3]&&f[4] && f1[1]&&f1[2]&&f1[3]&&f1[4];
+        if (bothOpen && span > 0.45) return 'gomu';
+    }
+
+    // ② Gura Gura — fist (all fingers down)
+    if (isFist(lm0)) return 'gura';
+
+    // ③ Yami Yami — claw (fingers partially curled)
+    if (isClaw(lm0)) return 'yami';
+
+    // ④ Pika Pika — only index finger up, pointing
+    if (f[1] && !f[2] && !f[3] && !f[4]) return 'pika';
+
+    // ⑤ Mera Mera — index + middle up (gun/peace), others down
+    if (f[1] && f[2] && !f[3] && !f[4]) return 'mera';
+
+    // ⑥ Hie Hie — all fingers up, karate-chop orientation (palm sideways/down)
+    if (isKaratChop(lm0) && !palmFacingCamera(lm0)) return 'hie';
+
+    // ⑦ Ope Ope — open palm facing camera
+    if (f[1]&&f[2]&&f[3]&&f[4] && palmFacingCamera(lm0) && !palmFacingDown(lm0)) return 'ope';
+
+    // ⑧ Suna Suna — open palm facing down
+    if (f[1]&&f[2]&&f[3]&&f[4] && palmFacingDown(lm0)) return 'suna';
+
+    return 'neutral';
+}
+
+// ── MediaPipe setup ────────────────────────────────────────────────────────
 const hands = new Hands({
     locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
 });
@@ -1198,7 +1548,7 @@ hands.onResults(results => {
     ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
     hand0 = null; hand1 = null;
-    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    if (results.multiHandLandmarks?.length > 0) {
         hand0 = results.multiHandLandmarks[0];
         if (results.multiHandLandmarks.length > 1) hand1 = results.multiHandLandmarks[1];
 
@@ -1209,8 +1559,14 @@ hands.onResults(results => {
         });
     }
 
-    // Fruit detection will go here in Step 5 — for now cycle neutral
-    updateFruit('neutral');
+    const raw    = classifyGesture(hand0, hand1);
+    const stable = stableGesture(raw);
+
+    if (stable !== currentFruit) {
+        playSound(stable);
+        highlightGuide(stable);
+    }
+    updateFruit(stable);
 });
 
 const cameraUtils = new Camera(videoEl, {
@@ -1226,6 +1582,24 @@ cameraUtils.start();
 // ═══════════════════════════════════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════════════════════════════════
+
+// Keyboard shortcuts for preview/testing (1–9 / 0)
+const keyMap = {
+    '1': 'mera', '2': 'hie', '3': 'gura', '4': 'ope',
+    '5': 'yami', '6': 'pika', '7': 'suna', '8': 'gomu', '0': 'neutral',
+};
+window.addEventListener('keydown', e => {
+    const fruit = keyMap[e.key];
+    if (fruit) {
+        // Override gesture debounce — force immediate switch
+        gestureCandidateHistory = Array(GESTURE_HOLD_FRAMES).fill(fruit);
+        if (fruit !== currentFruit) { playSound(fruit); highlightGuide(fruit); }
+        updateFruit(fruit);
+    }
+});
+
+// Resume audio context on first user interaction
+window.addEventListener('pointerdown', () => { try { getAudio().resume(); } catch(e){} }, { once: true });
 
 updateFruit('neutral');
 animate();
