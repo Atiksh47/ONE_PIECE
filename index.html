@@ -347,52 +347,151 @@ const vidCont  = document.getElementById('video-container');
 const debugEl  = document.getElementById('debug');
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  NEUTRAL — sea scene (placeholder, full generators added in later steps)
+//  NEUTRAL — Grand Line sea scene
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Stores each particle's base XZ so wave animation can update Y each frame
+// without losing the original layout.
+const neutralBaseXZ = new Float32Array(COUNT * 2);
+const neutralBBaseXZ = new Float32Array(COUNT_B * 2);
+let neutralSeeded = false;
+
+function seedNeutralBase() {
+    if (neutralSeeded) return;
+    neutralSeeded = true;
+    for (let i = 0; i < COUNT; i++) {
+        if (i < COUNT * 0.55) {
+            neutralBaseXZ[i*2]   = (Math.random() - 0.5) * 130;
+            neutralBaseXZ[i*2+1] = (Math.random() - 0.5) * 130;
+        } else if (i < COUNT * 0.75) {
+            neutralBaseXZ[i*2]   = (Math.random() - 0.5) * 100;
+            neutralBaseXZ[i*2+1] = (Math.random() - 0.5) * 100;
+        } else if (i < COUNT * 0.88) {
+            // Debris: random XZ doesn't matter, just mark it
+            neutralBaseXZ[i*2]   = (Math.random() - 0.5) * 80;
+            neutralBaseXZ[i*2+1] = -20 + Math.random() * 8;
+        } else {
+            // Horizon ring
+            const th = Math.random() * Math.PI * 2;
+            const r  = 48 + Math.random() * 18;
+            neutralBaseXZ[i*2]   = r * Math.cos(th);
+            neutralBaseXZ[i*2+1] = r * Math.sin(th);
+        }
+    }
+    for (let i = 0; i < COUNT_B; i++) {
+        neutralBBaseXZ[i*2]   = (Math.random() - 0.5) * 90;
+        neutralBBaseXZ[i*2+1] = (Math.random() - 0.5) * 90;
+    }
+}
+
 function getNeutral(i) {
+    seedNeutralBase();
+    const bx = neutralBaseXZ[i*2];
+    const bz = neutralBaseXZ[i*2+1];
+
+    // ── Surface waves (55 %) ──────────────────────────────────────────────
     if (i < COUNT * 0.55) {
-        // Ocean surface plane
-        const x = (Math.random() - 0.5) * 130;
-        const z = (Math.random() - 0.5) * 130;
-        const wave = Math.sin(x * 0.18) * Math.cos(z * 0.14) * 4.5;
+        // Two overlapping sine waves at different angles create interference pattern
+        const wave = Math.sin(bx * 0.16 + 0.8) * Math.cos(bz * 0.13) * 5.0
+                   + Math.sin(bx * 0.07 - bz * 0.09) * 2.2;
+        const distFromCenter = Math.sqrt(bx*bx + bz*bz) / 65;
         const depth = Math.random();
+        // Slight green tint near center (calm), deep blue at edges (open ocean)
+        const g = 0.16 + depth * 0.10 - distFromCenter * 0.05;
+        const b = 0.40 + depth * 0.38 + distFromCenter * 0.12;
         return {
-            x, y: -18 + wave + (Math.random() - 0.5) * 1.2, z,
-            r: 0.0, g: 0.18 + depth * 0.12, b: 0.45 + depth * 0.35,
-            s: 0.5 + Math.random() * 0.4
+            x: bx,
+            y: -18 + wave + (Math.random() - 0.5) * 0.8,
+            z: bz,
+            r: 0.0, g: Math.max(0, g), b: Math.min(1, b),
+            s: 0.45 + Math.random() * 0.5
         };
     }
-    if (i < COUNT * 0.80) {
-        // Sub-surface scatter — deeper blue
-        const x = (Math.random() - 0.5) * 100;
-        const z = (Math.random() - 0.5) * 100;
+
+    // ── Sub-surface scatter (20 %) ────────────────────────────────────────
+    if (i < COUNT * 0.75) {
         return {
-            x, y: -18 - Math.random() * 18, z,
-            r: 0.0, g: 0.08, b: 0.28 + Math.random() * 0.18,
-            s: 0.3
+            x: bx, y: -19 - Math.random() * 20, z: bz,
+            r: 0.0, g: 0.06 + Math.random()*0.06, b: 0.22 + Math.random()*0.18,
+            s: 0.28
         };
     }
-    // Horizon mist
-    const th = Math.random() * Math.PI * 2;
-    const r  = 45 + Math.random() * 20;
+
+    // ── Floating debris / driftwood (13 %) ────────────────────────────────
+    if (i < COUNT * 0.88) {
+        const dx = (Math.random() - 0.5) * 80;
+        const dz = (Math.random() - 0.5) * 80;
+        const wave = Math.sin(dx * 0.2) * Math.cos(dz * 0.15) * 4.5;
+        const brownish = Math.random();
+        return {
+            x: dx, y: -17 + wave + (Math.random()-0.5)*0.6, z: dz,
+            r: 0.10 + brownish*0.12, g: 0.12 + brownish*0.08, b: 0.06,
+            s: 0.5 + Math.random() * 1.0
+        };
+    }
+
+    // ── Horizon glow ring (12 %) ──────────────────────────────────────────
+    // A soft amber/orange band low on the horizon — Grand Line sunset
+    const hx = bx, hz = bz;
+    const horizonY = -10 + Math.random() * 6;
+    const warmth = Math.random();
     return {
-        x: r * Math.cos(th), y: -12 + Math.random() * 10, z: r * Math.sin(th),
-        r: 0.0, g: 0.12, b: 0.35,
-        s: 0.2
+        x: hx, y: horizonY, z: hz,
+        r: 0.30 + warmth * 0.25, g: 0.18 + warmth * 0.12, b: 0.02,
+        s: 0.18 + Math.random() * 0.22
     };
 }
 
 function getNeutralB(i) {
-    // Gentle surface sparkles
-    const x = (Math.random() - 0.5) * 80;
-    const z = (Math.random() - 0.5) * 80;
-    const wave = Math.sin(x * 0.2) * Math.cos(z * 0.15) * 4;
+    seedNeutralBase();
+    const bx = neutralBBaseXZ[i*2];
+    const bz = neutralBBaseXZ[i*2+1];
+
+    if (i < COUNT_B * 0.65) {
+        // Bright surface foam / crests at wave peaks
+        const wave = Math.sin(bx * 0.16) * Math.cos(bz * 0.13) * 5.0
+                   + Math.sin(bx * 0.07 - bz * 0.09) * 2.2;
+        return {
+            x: bx, y: -17.2 + wave, z: bz,
+            r: 0.15, g: 0.55, b: 1.0,
+            s: 0.7 + Math.random() * 0.8
+        };
+    }
+
+    // Sun pillar — vertical column of golden sparkles on the horizon
+    const pillarX = 38;
+    const pillarZ = -30;
+    const px = pillarX + (Math.random()-0.5) * 5;
+    const pz = pillarZ + (Math.random()-0.5) * 5;
+    const py = -18 + Math.random() * 55;  // tall column
+    const fade = 1 - py / 55;
     return {
-        x, y: -17.5 + wave, z,
-        r: 0.1, g: 0.45, b: 0.9,
-        s: 0.6 + Math.random() * 0.6
+        x: px, y: py, z: pz,
+        r: 0.9 + Math.random()*0.1, g: 0.65 + Math.random()*0.2, b: 0.05,
+        s: (0.3 + Math.random() * 0.6) * Math.max(0, fade)
     };
+}
+
+// Called each animation frame while neutral is active — animates wave Y
+function tickNeutralWaves(t) {
+    // Only update surface and foam particles (skip sub-surface/debris/horizon)
+    const surfaceEnd = Math.floor(COUNT * 0.55);
+    for (let i = 0; i < surfaceEnd; i++) {
+        const bx = neutralBaseXZ[i*2];
+        const bz = neutralBaseXZ[i*2+1];
+        const wave = Math.sin(bx * 0.16 + t * 0.6) * Math.cos(bz * 0.13 + t * 0.4) * 5.0
+                   + Math.sin(bx * 0.07 - bz * 0.09 + t * 0.9) * 2.2;
+        tPos[i*3+1] = -18 + wave;
+    }
+    // Foam crests
+    const foamEnd = Math.floor(COUNT_B * 0.65);
+    for (let i = 0; i < foamEnd; i++) {
+        const bx = neutralBBaseXZ[i*2];
+        const bz = neutralBBaseXZ[i*2+1];
+        const wave = Math.sin(bx * 0.16 + t * 0.6) * Math.cos(bz * 0.13 + t * 0.4) * 5.0
+                   + Math.sin(bx * 0.07 - bz * 0.09 + t * 0.9) * 2.2;
+        tPosB[i*3+1] = -17.2 + wave;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -455,6 +554,9 @@ function updateFruit(tech) {
         waveActive = false;
     }
 
+    // Reset camera position when leaving neutral
+    if (tech !== 'neutral') cam.position.y = 0;
+
     // Clear velocities on switch
     vel.fill(0);
 }
@@ -465,8 +567,14 @@ function updateFruit(tech) {
 
 const cfg = () => FRUITS[currentFruit] ?? FRUITS.neutral;
 
+let clock = 0;
+
 function animate() {
     requestAnimationFrame(animate);
+    clock += 0.016; // ~60fps increment; drives wave animation
+
+    // Live wave animation for neutral sea scene
+    if (currentFruit === 'neutral') tickNeutralWaves(clock);
 
     // Screen shake
     const shake = cfg().shake;
@@ -496,8 +604,11 @@ function animate() {
     // ── Per-fruit rotation personalities ──────────────────────────────────
     switch (currentFruit) {
         case 'neutral':
-            ptsA.rotation.y += 0.003;
-            ptsA.rotation.x  = Math.sin(Date.now() * 0.0003) * 0.08;
+            // Ocean doesn't spin — camera bobs gently instead
+            ptsA.rotation.y = 0;
+            ptsA.rotation.x = 0;
+            ptsB.rotation.y = 0;
+            cam.position.y = Math.sin(clock * 0.4) * 0.8;
             break;
         case 'mera':
             ptsA.rotation.y += 0.018;
